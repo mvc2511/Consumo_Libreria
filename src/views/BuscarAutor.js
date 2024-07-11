@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { getAutorPorId } from "../service/apiAutor.js"; // Importación de la función getAutorPorId desde el servicio API
+import { getAutorPorId } from "../services/apiAutor.js"; // Importación de la función getAutorPorId desde el servicio API
 import { Card, CardHeader, CardBody, Row, Col, Form, Input, Button } from "reactstrap"; // Importación de componentes de Reactstrap
 import PanelHeader from "components/PanelHeader/PanelHeader.js"; // Importación de un componente personalizado
 
@@ -40,7 +40,7 @@ function BuscarAutorId() {
           <Col md={6}>
             <Card>
               <CardHeader>
-                <h5 className="title">Buscar Autor por Id</h5> {/* Título del formulario de búsqueda */}
+                <h5 className="title">Buscar Autor por ID</h5> {/* Título del formulario de búsqueda */}
                 <p className="category">Ingresa el ID del autor</p> {/* Descripción del formulario */}
               </CardHeader>
               <CardBody>

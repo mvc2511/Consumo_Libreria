@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardBody, FormGroup, Form, Input, Row, Col, Button, Alert } from "reactstrap";
 import PanelHeader from "components/PanelHeader/PanelHeader.js";
-import { agregarLibro, getAutores } from "../service/apiLibro.js";
+import { agregarLibro, getAutores } from "../services/apiLibro.js";
 
 function AgregarLibro() {
   // Estados para manejar los datos del formulario y alertas

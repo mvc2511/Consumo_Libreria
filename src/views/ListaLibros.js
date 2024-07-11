@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getLibros } from "../service/apiLibro"; // Importa la función para obtener libros
+import { getLibros } from "../services/apiLibro";
 import {
   Row,
   Col,
@@ -16,8 +16,8 @@ function ListBooks() {
   useEffect(() => {
     const fetchLibros = async () => {
       try {
-        const librosData = await getLibros(); // Obtener la lista de libros
-        setLibros(librosData); // Actualizar el estado con la lista de libros obtenida
+        const librosData = await getLibros();
+        setLibros(librosData);
       } catch (error) {
         console.error("Error al obtener libros:", error);
       }
@@ -26,16 +26,15 @@ function ListBooks() {
     fetchLibros();
   }, []);
 
-  // Función para formatear la fecha y mostrarla sin la hora
   const formatDate = (dateString) => {
-    if (!dateString) return ""; // Manejar casos donde la fecha no está definida
+    if (!dateString) return "";
 
-    const date = new Date(dateString); // Crear un objeto de fecha desde la cadena de fecha
-    const year = date.getFullYear(); // Obtener el año
-    const month = (1 + date.getMonth()).toString().padStart(2, "0"); // Obtener el mes y formatearlo
-    const day = date.getDate().toString().padStart(2, "0"); // Obtener el día y formatearlo
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = (1 + date.getMonth()).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
 
-    return `${day}/${month}/${year}`; // Formatear la fecha como día/mes/año
+    return `${day}/${month}/${year}`;
   };
 
   return (
@@ -55,14 +54,22 @@ function ListBooks() {
                       <th>Título</th>
                       <th>Fecha de Publicación</th>
                       <th>Autor</th>
+                      <th>Imagen del Autor</th>
                     </tr>
                   </thead>
                   <tbody>
                     {libros.map((libro, index) => (
                       <tr key={index}>
                         <td>{libro.titulo}</td>
-                        <td>{formatDate(libro.fechaPublicacion)}</td> {/* Aplicar formatDate para mostrar solo la fecha */}
-                        <td>{libro.autorNombre ? libro.autorNombre : 'Sin información de autores'}</td> {/* Mostrar el nombre del autor */}
+                        <td>{formatDate(libro.fechaPublicacion)}</td>
+                        <td>{libro.autorNombre ? libro.autorNombre : 'Sin información de autores'}</td>
+                        <td>
+                          {libro.autorImagen ? (
+                            <img src={`data:image/jpeg;base64,${libro.autorImagen}`} alt={libro.autorNombre} style={{ width: '50px', height: 'auto' }} />
+                          ) : (
+                            'Sin imagen'
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

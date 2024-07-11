@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardHeader, CardBody, FormGroup, Form, Input, Row, Col, Button, Alert } from "reactstrap"; // Importación de componentes de Reactstrap
 import PanelHeader from "components/PanelHeader/PanelHeader.js"; // Importación de un componente personalizado
-import { agregarAutor } from "../service/apiAutor.js"; // Importación de la función agregarAutor desde el servicio API
+import { agregarAutor } from "../services/apiAutor.js"; // Importación de la función agregarAutor desde el servicio API
 
 function User() {
   // Definición de estados para manejar el formulario y mensajes de alerta

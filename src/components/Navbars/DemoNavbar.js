@@ -97,7 +97,7 @@ function DemoNavbar(props) {
         location.pathname.indexOf("full-screen-maps") !== -1
           ? "navbar-absolute fixed-top"
           : "navbar-absolute fixed-top " +
-            (color === "transparent" ? "navbar-transparent " : "")
+          (color === "transparent" ? "navbar-transparent " : "")
       }
     >
       <Container fluid>
@@ -153,7 +153,9 @@ function DemoNavbar(props) {
                 </p>
               </DropdownToggle>
               <DropdownMenu right>
-                <DropdownItem tag="a">Action</DropdownItem>
+                <DropdownItem tag={Link} to="/admin/lista-cupones">
+                  Cupones
+                </DropdownItem>
                 <DropdownItem tag="a">Another Action</DropdownItem>
                 <DropdownItem tag="a">Something else here</DropdownItem>
               </DropdownMenu>

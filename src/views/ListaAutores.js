@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { getAutores } from "../service/apiAutor.js"; // Importación de funciones del servicio API de autores
+import { getAutores } from "../services/apiAutor.js"; // Importación de funciones del servicio API de autores
 import { Card, CardBody, CardHeader, Table, Row, Col } from "reactstrap"; // Importación de componentes de Reactstrap
 import PanelHeader from "components/PanelHeader/PanelHeader.js"; // Importación de un componente personalizado
-import { getLibros } from "../service/apiLibro"; // Importa la función para obtener libros
+import { getLibros } from "../services/apiLibro.js"; // Importa la función para obtener libros
 
 function TablaAutores() {
   const [autores, setAutores] = useState([]); // Estado para almacenar la lista de autores

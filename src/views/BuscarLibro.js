@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getLibroPorId } from '../service/apiLibro.js';
+import { getLibroPorId } from '../services/apiLibro.js';
 import { Card, CardHeader, CardBody, Row, Col, Form, Input, Button } from "reactstrap";
 import PanelHeader from "components/PanelHeader/PanelHeader.js";
 
@@ -49,7 +49,9 @@ function BuscarLibroPorGuid() {
                         onChange={(e) => setSearchGuid(e.target.value)}
                       />
                     </Col>
-                    <Col md="4">
+                  </Row>
+                  <Row className="mt-2">
+                    <Col md="6">
                       <Button type="submit" color="primary">
                         Buscar
                       </Button>
