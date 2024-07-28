@@ -1,17 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { getLibros } from "../services/apiLibro";
-import {
-  Row,
-  Col,
-  Card,
-  CardHeader,
-  CardBody,
-  Table,
-} from "reactstrap";
+import { agregarAlCarrito } from "../services/apiCarrito";
+import { Row, Col, Card, CardBody, CardImg, CardTitle, CardSubtitle, Button } from "reactstrap";
+import NotificationAlert from "react-notification-alert";
 import PanelHeader from "components/PanelHeader/PanelHeader.js";
 
 function ListBooks() {
   const [libros, setLibros] = useState([]);
+  const notificationAlert = useRef();
 
   useEffect(() => {
     const fetchLibros = async () => {
@@ -26,57 +22,61 @@ function ListBooks() {
     fetchLibros();
   }, []);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
+  const handleAgregarAlCarrito = async (libro) => {
+    try {
+      if (!libro.libreriaMaterialId) {
+        console.error("libreriaMaterialId no está definido para este libro:", libro);
+        notify('danger', "Error: No se puede agregar al carrito. Falta información del libro.");
+        return;
+      }
 
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = (1 + date.getMonth()).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
+      await agregarAlCarrito(libro);
+      notify('success', "Libro agregado al carrito con éxito.");
+    } catch (error) {
+      console.error("Error al agregar el libro al carrito:", error);
+      notify('danger', "Error al agregar el libro al carrito.");
+    }
+  };
 
-    return `${day}/${month}/${year}`;
+  const notify = (type, message) => {
+    const options = {
+      place: 'tr', // Top right
+      message: <div>{message}</div>,
+      type: type,
+      icon: "now-ui-icons ui-1_bell-53",
+      autoDismiss: 7
+    };
+    notificationAlert.current.notificationAlert(options);
   };
 
   return (
     <>
       <PanelHeader size="sm" />
       <div className="content">
+        <NotificationAlert ref={notificationAlert} />
         <Row>
-          <Col xs={12}>
-            <Card>
-              <CardHeader>
-                <h4 className="title">Libros</h4>
-              </CardHeader>
-              <CardBody>
-                <Table responsive>
-                  <thead className="text-primary">
-                    <tr>
-                      <th>Título</th>
-                      <th>Fecha de Publicación</th>
-                      <th>Autor</th>
-                      <th>Imagen del Autor</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {libros.map((libro, index) => (
-                      <tr key={index}>
-                        <td>{libro.titulo}</td>
-                        <td>{formatDate(libro.fechaPublicacion)}</td>
-                        <td>{libro.autorNombre ? libro.autorNombre : 'Sin información de autores'}</td>
-                        <td>
-                          {libro.autorImagen ? (
-                            <img src={`data:image/jpeg;base64,${libro.autorImagen}`} alt={libro.autorNombre} style={{ width: '50px', height: 'auto' }} />
-                          ) : (
-                            'Sin imagen'
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </CardBody>
-            </Card>
-          </Col>
+          {libros.map((libro) => (
+            <Col md={4} key={libro.libreriaMaterialId || libro.id || libro.titulo}>
+              <Card>
+                <CardImg
+                  top
+                  width="100%"
+                  src={libro.autorImagen ? `data:image/jpeg;base64,${libro.autorImagen}` : 'placeholder.jpg'}
+                  alt={libro.autorNombre}
+                  style={{ height: '250px', objectFit: 'cover' }}
+                />
+                <CardBody>
+                  <CardTitle tag="h5">{libro.titulo}</CardTitle>
+                  <CardSubtitle tag="h6" className="mb-2 text-muted">
+                    {libro.autorNombre || "Autor desconocido"}
+                  </CardSubtitle>
+                  <p>Precio: {libro.precio ? `$${libro.precio.toFixed(2)}` : 'Sin precio'}</p>
+                  <p>Fecha de Publicación: {new Date(libro.fechaPublicacion).toLocaleDateString()}</p>
+                  <Button color="primary" onClick={() => handleAgregarAlCarrito(libro)}>Agregar al carrito</Button>
+                </CardBody>
+              </Card>
+            </Col>
+          ))}
         </Row>
       </div>
     </>

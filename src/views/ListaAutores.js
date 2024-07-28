@@ -9,40 +9,35 @@ function TablaAutores() {
   const [librosConAutores, setLibrosConAutores] = useState([]); // Estado para almacenar los libros con nombres de autores
 
   useEffect(() => {
-    // Efecto de lado para cargar la lista de autores al cargar el componente
     const fetchData = async () => {
       try {
-        // Obtener la lista de autores usando la función getAutores del servicio API
         const dataAutores = await getAutores();
-        setAutores(dataAutores); // Actualizar el estado con la lista de autores obtenida
+        setAutores(dataAutores || []); // Actualizar el estado con la lista de autores obtenida
 
-        // Obtener la lista de libros con nombres de autores usando la función getLibros del servicio API
         const dataLibros = await getLibros();
-        setLibrosConAutores(dataLibros); // Actualizar el estado con la lista de libros obtenida
+        setLibrosConAutores(dataLibros || []); // Actualizar el estado con la lista de libros obtenida
       } catch (error) {
-        console.error("Error al obtener autores o libros:", error); // Manejo de errores si falla la obtención de autores o libros
+        console.error("Error al obtener autores o libros:", error); // Manejo de errores
       }
     };
 
     fetchData(); // Llamar a la función fetchData al montar el componente
   }, []);
 
-  // Función para formatear la fecha y mostrarla sin la hora
   const formatDate = (dateString) => {
     if (!dateString) return ""; // Manejar casos donde la fecha no está definida
 
-    const date = new Date(dateString); // Crear un objeto de fecha desde la cadena de fecha
-    const year = date.getFullYear(); // Obtener el año
-    const month = (1 + date.getMonth()).toString().padStart(2, "0"); // Obtener el mes y formatearlo
-    const day = date.getDate().toString().padStart(2, "0"); // Obtener el día y formatearlo
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = (1 + date.getMonth()).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
 
     return `${day}/${month}/${year}`; // Formatear la fecha como día/mes/año
   };
 
-  // Renderizado del componente
   return (
     <>
-      <PanelHeader size="sm" /> {/* Encabezado del panel */}
+      <PanelHeader size="sm" />
       <div className="content">
         <Row>
           <Col xs={12}>
@@ -51,26 +46,31 @@ function TablaAutores() {
                 <h4 className="title">Autores</h4>
               </CardHeader>
               <CardBody>
-                {/* Tabla para mostrar la lista de autores */}
                 <Table responsive>
                   <thead className="text-primary">
                     <tr>
-                      <th>Nombre</th> {/* Encabezado de columna para el nombre del autor */}
-                      <th>Apellido</th> {/* Encabezado de columna para el apellido del autor */}
-                      <th>Fecha de Nacimiento</th> {/* Encabezado de columna para la fecha de nacimiento del autor */}
-                      <th>Imagen</th> {/* Encabezado de columna para la imagen del autor */}
+                      <th>Nombre</th>
+                      <th>Apellido</th>
+                      <th>Fecha de Nacimiento</th>
+                      <th>Imagen</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {/* Mapeo de la lista de autores para mostrar cada autor en una fila */}
                     {autores.map((autor, index) => (
                       <tr key={index}>
-                        <td>{autor.nombre}</td> {/* Celda con el nombre del autor */}
-                        <td>{autor.apellido}</td> {/* Celda con el apellido del autor */}
-                        <td>{formatDate(autor.fechaNacimiento)}</td> {/* Celda con la fecha de nacimiento del autor */}
+                        <td>{autor.nombre}</td>
+                        <td>{autor.apellido}</td>
+                        <td>{formatDate(autor.fechaNacimiento)}</td>
                         <td>
-                          {/* Celda con la imagen del autor */}
-                          <img src={`data:image/jpeg;base64,${autor.imagen}`} alt={`Imagen de ${autor.nombre}`} style={{ width: '100px', height: 'auto' }} />
+                          {autor.imagen ? (
+                            <img 
+                              src={`data:image/jpeg;base64,${autor.imagen}`} 
+                              alt={`Imagen de ${autor.nombre}`} 
+                              style={{ width: '100px', height: 'auto' }} 
+                            />
+                          ) : (
+                            <span>Imagen no disponible</span>
+                          )}
                         </td>
                       </tr>
                     ))}

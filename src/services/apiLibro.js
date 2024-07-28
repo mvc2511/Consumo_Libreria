@@ -74,6 +74,7 @@ export const agregarLibro = async (nuevoLibro) => {
       titulo: nuevoLibro.titulo,
       fechaPublicacion: nuevoLibro.fechaPublicacion,
       autorLibro: autorEncontrado.autorLibroGuid,
+      precio: nuevoLibro.precio
     };
 
     const response = await axios.post(API_LIBRO_URL, libroParaEnviar, {

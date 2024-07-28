@@ -9,6 +9,7 @@ import BuscarAutor from "views/BuscarAutor.js";
 import Cupones from "views/ListaCupones";
 import AddCupon from "views/AddCupon"; 
 import EditCupon from "views/EditCupon"; 
+//import Carrito from "views/Carrito";
 
 var dashRoutes = [
   {
@@ -99,5 +100,15 @@ var dashRoutes = [
     layout: "/admin",
     sidebar: false,
   },
+  /*
+  {
+    path: "carrito-compras",
+    name: "Carrito de Compras",
+    icon: "design_bullet-list-67",
+    component: <Carrito />,
+    layout: "/admin",
+    sidebar: false,
+  },
+  */
 ];
 export default dashRoutes;

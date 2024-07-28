@@ -156,7 +156,9 @@ function DemoNavbar(props) {
                 <DropdownItem tag={Link} to="/admin/lista-cupones">
                   Cupones
                 </DropdownItem>
-                <DropdownItem tag="a">Another Action</DropdownItem>
+                <DropdownItem tag={Link} to="/admin/carrito-compras">
+                  Carrito de Compras
+                </DropdownItem>
                 <DropdownItem tag="a">Something else here</DropdownItem>
               </DropdownMenu>
             </Dropdown>

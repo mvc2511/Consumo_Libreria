@@ -70,6 +70,7 @@ function BuscarLibroPorGuid() {
                 </CardHeader>
                 <CardBody>
                   <p>Escrito por: {libro.autorNombre}</p>
+                  <p>Precio: {libro.precio ? `$${libro.precio.toFixed(2)}` : 'Sin precio'}</p>
                 </CardBody>
               </Card>
             </Col>
