@@ -110,7 +110,7 @@ const CarritoCompras = () => {
                         </Col>
                         <Col md={6}>
                           <CardTitle tag="h5">{producto.tituloLibro}</CardTitle>
-                          <CardText>Género: {producto.genero}</CardText>
+                          <CardText>Autor: {producto.autorLibro}</CardText>
                           <CardText>Fecha de Publicación: {new Date(producto.fechaPublicacion).toLocaleDateString()}</CardText>
                         </Col>
                         <Col md={2} className="text-right">
