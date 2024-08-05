@@ -9,7 +9,7 @@ import BuscarAutor from "views/BuscarAutor.js";
 import Cupones from "views/ListaCupones";
 import AddCupon from "views/AddCupon"; 
 import EditCupon from "views/EditCupon"; 
-//import Carrito from "views/Carrito";
+import Carrito from "views/Carrito";
 
 var dashRoutes = [
   {
@@ -19,15 +19,7 @@ var dashRoutes = [
     component: <Dashboard />,
     layout: "/admin",
     sidebar: true,
-  },/*
-  {
-    path: "/icons",
-    name: "Icons",
-    icon: "design_image",
-    component: <Icons />,
-    layout: "/admin",
   },
-  */
   {
     path: "/add-libro",
     name: "Agregar Libro",
@@ -100,7 +92,6 @@ var dashRoutes = [
     layout: "/admin",
     sidebar: false,
   },
-  /*
   {
     path: "carrito-compras",
     name: "Carrito de Compras",
@@ -109,6 +100,5 @@ var dashRoutes = [
     layout: "/admin",
     sidebar: false,
   },
-  */
 ];
 export default dashRoutes;

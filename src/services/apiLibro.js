@@ -36,7 +36,7 @@ export const getLibros = async () => {
 
 export const getLibroPorId = async (guid) => {
   try {
-    const response = await axios.post(`${API_LIBRO_URL}/id?id=${guid}`, null, {
+    const response = await axios.get(`${API_LIBRO_URL}/id?id=${guid}`, null, {
       headers: {
         'Content-Type': 'application/json'
       }

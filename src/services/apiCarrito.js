@@ -1,38 +1,43 @@
 import axios from 'axios';
 
-const API_CARRITO_URL = 'https://localhost:7194/api/CarritoCompras';
+const API_BASE_URL = 'https://localhost:7194/api/CarritoCompras';
 
-export const obtenerCarrito = async (carritoId) => {
+export const crearCarrito = async (data) => {
   try {
-    const response = await axios.get(`${API_CARRITO_URL}/${carritoId}`);
+    const response = await axios.post(`${API_BASE_URL}/Crear`, data);
     return response.data;
   } catch (error) {
-    console.error('Error al obtener carrito:', error);
+    console.error('Error al crear el carrito:', error);
     throw error;
   }
 };
 
-
-export const agregarAlCarrito = async (libro) => {
+export const obtenerCarritoPorId = async (id) => {
   try {
-    // Serializa los datos del libro a una cadena JSON
-    const libroComoCadena = JSON.stringify({
-      libroId: libro.libreriaMaterialId,
-      tituloLibro: libro.titulo,
-      autorLibro: libro.autorNombre,
-      fechaPublicacion: libro.fechaPublicacion,
-      precio: libro.precio
-    });
-
-    // Envía la cadena dentro de la lista productoLista
-    const response = await axios.post(API_CARRITO_URL, {
-      fechaCreacionSesion: new Date().toISOString(),
-      productoLista: [libroComoCadena]
-    });
-
+    const response = await axios.get(`${API_BASE_URL}/${id}`);
     return response.data;
   } catch (error) {
-    console.error("Error al agregar al carrito:", error);
+    console.error('Error al obtener carrito por ID:', error);
+    throw error;
+  }
+};
+
+export const obtenerTodoElCarrito = async () => {
+  try {
+    const response = await axios.get(API_BASE_URL);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener todo el carrito:', error);
+    throw error;
+  }
+};
+
+export const eliminarArticuloDelCarrito = async (carritoSesionId, productoId) => {
+  try {
+    const response = await axios.delete(`${API_BASE_URL}/Eliminar/${carritoSesionId}/${productoId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al eliminar el artículo del carrito:', error);
     throw error;
   }
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getLibros } from "../services/apiLibro";
-import { agregarAlCarrito } from "../services/apiCarrito";
+import { crearCarrito } from "../services/apiCarrito";
 import { Row, Col, Card, CardBody, CardImg, CardTitle, CardSubtitle, Button } from "reactstrap";
 import NotificationAlert from "react-notification-alert";
 import PanelHeader from "components/PanelHeader/PanelHeader.js";
@@ -30,7 +30,13 @@ function ListBooks() {
         return;
       }
 
-      await agregarAlCarrito(libro);
+      // Crear el objeto data con el formato esperado por la API
+      const data = {
+        fechaCreacionSesion: new Date().toISOString(), // Fecha actual en formato ISO
+        productoLista: [libro.libreriaMaterialId.toString()] // Lista de IDs del libro (GUID o libreriaMaterialId)
+      };
+
+      await crearCarrito(data);
       notify('success', "Libro agregado al carrito con éxito.");
     } catch (error) {
       console.error("Error al agregar el libro al carrito:", error);
