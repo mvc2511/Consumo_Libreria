@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Row, Col, Card, CardBody, CardTitle, CardText, Button, Input, Table, Label } from "reactstrap";
+import { Row, Col, Card, CardBody, CardTitle, CardText, Button, Input, Table } from "reactstrap";
 import NotificationAlert from "react-notification-alert";
 import PanelHeader from "components/PanelHeader/PanelHeader.js";
-import { obtenerTodoElCarrito, eliminarArticuloDelCarrito } from '../services/apiCarrito'; // Asegúrate de que la ruta sea correcta
-import { getCuponPorCodigo } from '../services/apiCupones'; // Asegúrate de que la ruta sea correcta
+import { obtenerTodoElCarrito, eliminarArticuloDelCarrito } from '../services/apiCarrito';
+import { getCuponPorCodigo } from '../services/apiCupones';
 
 const CarritoCompras = () => {
   const [carritos, setCarritos] = useState([]);
   const [cupon, setCupon] = useState('');
-  const [descuento, setDescuento] = useState(0);
+  const [descuento, setDescuento] = useState(0);  // Estado para guardar el porcentaje de descuento
   const notificationAlert = useRef();
 
   useEffect(() => {
@@ -39,9 +39,10 @@ const CarritoCompras = () => {
   const aplicarCupon = async () => {
     try {
       const cuponData = await getCuponPorCodigo(cupon);
-      if (cuponData && cuponData.descuento) {
-        setDescuento(cuponData.descuento);
-        notify('success', 'Cupón aplicado con éxito.');
+      if (cuponData.isSuccess && cuponData.result && cuponData.result.porcentajeDescuento) {
+        const descuentoAplicado = cuponData.result.porcentajeDescuento;
+        setDescuento(descuentoAplicado);
+        notify('success', `Cupón aplicado con éxito. Descuento: ${descuentoAplicado}%`);
       } else {
         notify('danger', 'Cupón no válido.');
       }
@@ -49,7 +50,7 @@ const CarritoCompras = () => {
       console.error('Error al aplicar cupón:', error);
       notify('danger', 'Error al aplicar cupón.');
     }
-  };
+  }; 
 
   const eliminarArticulo = async (carritoSesionId, productoId) => {
     try {
@@ -60,11 +61,11 @@ const CarritoCompras = () => {
           if (productosActualizados.length > 0) {
             return { ...carrito, listaDeProductos: productosActualizados };
           } else {
-            return null; // Si no hay productos, elimina el carrito
+            return null;
           }
         }
         return carrito;
-      }).filter(carrito => carrito !== null); // Filtra los carritos vacíos
+      }).filter(carrito => carrito !== null);
       setCarritos(carritoActualizado);
       notify('success', 'Artículo eliminado con éxito.');
     } catch (error) {
@@ -84,10 +85,11 @@ const CarritoCompras = () => {
     notificationAlert.current.notificationAlert(options);
   };
 
+  // Cálculos del total con y sin descuento
   const totalSubtotal = carritos.reduce((total, carrito) => total + calcularTotal(carrito.listaDeProductos), 0);
   const totalImpuestos = carritos.reduce((total, carrito) => total + calcularImpuestos(carrito.listaDeProductos), 0);
-  const totalConDescuento = totalSubtotal * ((100 - descuento) / 100);
-  const totalFinal = totalConDescuento + totalImpuestos;
+  const totalConDescuento = totalSubtotal * ((100 - descuento) / 100);  // Aplica el descuento al subtotal
+  const totalFinal = totalConDescuento + totalImpuestos;  // Suma los impuestos para obtener el total final
 
   return (
     <>
