@@ -12,7 +12,7 @@ import {
     InputGroupAddon,
     Button,
     Form,
-    Alert // Importa Alert de reactstrap para mostrar mensajes de error
+    Alert
 } from 'reactstrap';
 import PanelHeader from 'components/PanelHeader/PanelHeader';
 import { Link } from 'react-router-dom';
@@ -22,7 +22,7 @@ function TablaCupones() {
     const [cupones, setCupones] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [error, setError] = useState(null); // Estado para manejar errores
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -47,17 +47,17 @@ function TablaCupones() {
         setLoading(true);
         try {
             let searchResult;
-            if (!isNaN(searchTerm)) { // Si es un número, buscar por ID
+            if (!isNaN(searchTerm)) {
                 searchResult = await getCuponPorId(searchTerm);
-            } else { // Si no, buscar por código de cupón
+            } else {
                 searchResult = await getCuponPorCodigo(searchTerm);
             }
             if (searchResult.isSuccess) {
                 setCupones([searchResult.result]);
-                setError(null); // Limpiar error si la búsqueda fue exitosa
+                setError(null);
             } else {
                 setError('Error al buscar cupón: ' + searchResult.message);
-                setCupones([]); // Establecer cupones como un array vacío en caso de error
+                setCupones([]);
             }
         } catch (error) {
             setError('Error al buscar cupón: ' + error.message);
@@ -72,7 +72,7 @@ function TablaCupones() {
             const response = await getCupones();
             if (response.isSuccess) {
                 setCupones(response.result);
-                setError(null); // Limpiar error si la búsqueda fue exitosa
+                setError(null);
             } else {
                 setError('Error al obtener cupones: ' + response.message);
             }
@@ -130,6 +130,8 @@ function TablaCupones() {
                                                     <th>Código del Cupón</th>
                                                     <th>Porcentaje de Descuento (%)</th>
                                                     <th>Descuento Mínimo</th>
+                                                    <th>Fecha de Inicio</th>
+                                                    <th>Fecha de Fin</th>
                                                     <th>Acciones</th>
                                                 </tr>
                                             </thead>
@@ -139,6 +141,8 @@ function TablaCupones() {
                                                         <td>{cupon.cuponCode}</td>
                                                         <td>{cupon.porcentajeDescuento}</td>
                                                         <td>{cupon.descuentoMinimo}</td>
+                                                        <td>{new Date(cupon.fechaInicio).toLocaleDateString()}</td>
+                                                        <td>{new Date(cupon.fechaFin).toLocaleDateString()}</td>
                                                         <td>
                                                             <Button color="info" size="sm">
                                                                 <Link to={`/admin/edit-cupon/${cupon.cuponId}`} style={{ color: 'white' }}>

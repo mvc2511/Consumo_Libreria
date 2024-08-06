@@ -24,7 +24,7 @@ function User() {
       // Llamar a la función agregarAutor del servicio API para agregar el nuevo autor
       const respuesta = await agregarAutor(nuevoAutor, imagen);
 
-      console.log("Autor agregado:", respuesta);
+      //console.log("Autor agregado:", respuesta);
 
       // Reiniciar los valores del formulario y mostrar un mensaje de éxito
       setNombre("");

@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Card, CardHeader, CardBody, FormGroup, Form, Input, Row, Col, Button, Alert } from 'reactstrap';
 import PanelHeader from 'components/PanelHeader/PanelHeader';
 import { agregarCupon } from '../services/apiCupones';
-import { Link } from 'react-router-dom'; // Importa Link desde react-router-dom
+import { Link } from 'react-router-dom';
 
 function AgregarCupon() {
   const [codigo, setCodigo] = useState('');
   const [porcentajeDescuento, setPorcentajeDescuento] = useState('');
   const [descuentoMinimo, setDescuentoMinimo] = useState('');
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertColor, setAlertColor] = useState('success');
@@ -19,7 +21,9 @@ function AgregarCupon() {
       const nuevoCupon = {
         cuponCode: codigo,
         porcentajeDescuento,
-        descuentoMinimo
+        descuentoMinimo,
+        fechaInicio,
+        fechaFin
       };
 
       const respuesta = await agregarCupon(nuevoCupon);
@@ -28,6 +32,8 @@ function AgregarCupon() {
       setCodigo('');
       setPorcentajeDescuento('');
       setDescuentoMinimo('');
+      setFechaInicio('');
+      setFechaFin('');
 
       setAlertMessage('Cupón agregado exitosamente');
       setAlertColor('success');
@@ -109,6 +115,32 @@ function AgregarCupon() {
                           onChange={(e) => setDescuentoMinimo(e.target.value)}
                           placeholder="Descuento Mínimo"
                           type="number"
+                          required
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col className="pr-1" md="6">
+                      <FormGroup>
+                        <label>Fecha de Inicio</label>
+                        <Input
+                          value={fechaInicio}
+                          onChange={(e) => setFechaInicio(e.target.value)}
+                          placeholder="Fecha de Inicio"
+                          type="date"
+                          required
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col className="pl-1" md="6">
+                      <FormGroup>
+                        <label>Fecha de Fin</label>
+                        <Input
+                          value={fechaFin}
+                          onChange={(e) => setFechaFin(e.target.value)}
+                          placeholder="Fecha de Fin"
+                          type="date"
                           required
                         />
                       </FormGroup>

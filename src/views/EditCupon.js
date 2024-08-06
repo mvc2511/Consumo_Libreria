@@ -12,7 +12,11 @@ function EditarCupon() {
         cuponId: '',
         cuponCode: '',
         porcentajeDescuento: '',
-        descuentoMinimo: ''
+        descuentoMinimo: '',
+        fechaInicio: '',
+        fechaFin: '',
+        fechaInicioActual: '',
+        fechaFinActual: ''
     });
 
     const [alertVisible, setAlertVisible] = useState(false);
@@ -24,12 +28,16 @@ function EditarCupon() {
             try {
                 const cuponData = await getCuponPorId(id);
                 if (cuponData && cuponData.result && cuponData.result.cuponId) {
-                    const { cuponId, cuponCode, porcentajeDescuento, descuentoMinimo } = cuponData.result;
+                    const { cuponId, cuponCode, porcentajeDescuento, descuentoMinimo, fechaInicio, fechaFin } = cuponData.result;
                     setCupon({
                         cuponId,
                         cuponCode: cuponCode || '',
                         porcentajeDescuento: porcentajeDescuento || '',
-                        descuentoMinimo: descuentoMinimo || ''
+                        descuentoMinimo: descuentoMinimo || '',
+                        fechaInicio: fechaInicio || '',
+                        fechaFin: fechaFin || '',
+                        fechaInicioActual: new Date(fechaInicio).toLocaleDateString('es-ES'),
+                        fechaFinActual: new Date(fechaFin).toLocaleDateString('es-ES')
                     });
                 } else {
                     throw new Error('El cupón no existe o los datos son inválidos');
@@ -144,6 +152,54 @@ function EditarCupon() {
                                                     onChange={(e) => setCupon({ ...cupon, descuentoMinimo: e.target.value })}
                                                     placeholder="Descuento Mínimo"
                                                     type="number"
+                                                    required
+                                                />
+                                            </FormGroup>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col className="pr-1" md="6">
+                                            <FormGroup>
+                                                <label>Fecha de Inicio (Actual)</label>
+                                                <Input
+                                                    value={cupon.fechaInicioActual}
+                                                    readOnly
+                                                    disabled
+                                                />
+                                            </FormGroup>
+                                        </Col>
+                                        <Col className="pl-1" md="6">
+                                            <FormGroup>
+                                                <label>Fecha de Fin (Actual)</label>
+                                                <Input
+                                                    value={cupon.fechaFinActual}
+                                                    readOnly
+                                                    disabled
+                                                />
+                                            </FormGroup>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col className="pr-1" md="6">
+                                            <FormGroup>
+                                                <label>Fecha de Inicio</label>
+                                                <Input
+                                                    value={cupon.fechaInicio}
+                                                    onChange={(e) => setCupon({ ...cupon, fechaInicio: e.target.value })}
+                                                    placeholder="Fecha de Inicio"
+                                                    type="date"
+                                                    required
+                                                />
+                                            </FormGroup>
+                                        </Col>
+                                        <Col className="pl-1" md="6">
+                                            <FormGroup>
+                                                <label>Fecha de Fin</label>
+                                                <Input
+                                                    value={cupon.fechaFin}
+                                                    onChange={(e) => setCupon({ ...cupon, fechaFin: e.target.value })}
+                                                    placeholder="Fecha de Fin"
+                                                    type="date"
                                                     required
                                                 />
                                             </FormGroup>

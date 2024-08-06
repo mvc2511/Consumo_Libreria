@@ -67,7 +67,7 @@ function ListBooks() {
                 <CardImg
                   top
                   width="100%"
-                  src={libro.autorImagen ? `data:image/jpeg;base64,${libro.autorImagen}` : 'placeholder.jpg'}
+                  src={libro.imagenes ? `data:image/jpeg;base64,${libro.imagenes}` : 'placeholder.jpg'}
                   alt={libro.autorNombre}
                   style={{ height: '250px', objectFit: 'cover' }}
                 />

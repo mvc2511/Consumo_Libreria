@@ -3,13 +3,16 @@ import { Row, Col, Card, CardBody, CardTitle, CardText, Button, Input, Table } f
 import NotificationAlert from "react-notification-alert";
 import PanelHeader from "components/PanelHeader/PanelHeader.js";
 import { obtenerTodoElCarrito, eliminarArticuloDelCarrito } from '../services/apiCarrito';
-import { getCuponPorCodigo } from '../services/apiCupones';
+import { getCuponPorCodigo, getCupones } from '../services/apiCupones';
+import { getAutores } from '../services/apiAutor';
 
 const CarritoCompras = () => {
   const [carritos, setCarritos] = useState([]);
   const [cupon, setCupon] = useState('');
-  const [descuento, setDescuento] = useState(0);  // Estado para guardar el porcentaje de descuento
+  const [descuento, setDescuento] = useState(0);
+  const [autores, setAutores] = useState({});
   const notificationAlert = useRef();
+  const [cuponesValidos, setCuponesValidos] = useState([]);
 
   useEffect(() => {
     const fetchCarritos = async () => {
@@ -23,17 +26,61 @@ const CarritoCompras = () => {
       }
     };
 
+    const fetchAutores = async () => {
+      try {
+        const autoresData = await getAutores();
+        const autoresDic = {};
+        autoresData.forEach(autor => {
+          autoresDic[autor.autorLibroGuid] = `${autor.nombre} ${autor.apellido}`;
+        });
+        setAutores(autoresDic);
+      } catch (error) {
+        console.error('Error al obtener autores:', error);
+        notify('danger', 'Error al obtener datos de los autores.');
+      }
+    };
+
+    const fetchCupones = async () => {
+      try {
+        const response = await getCupones();
+        if (response.isSuccess) {
+          const cuponesActivos = response.result.filter(cupon => new Date(cupon.fechaFin) > new Date());
+          setCuponesValidos(cuponesActivos);
+        } else {
+          console.error('Error al obtener cupones:', response.message);
+          notify('danger', 'Error al obtener cupones.');
+        }
+      } catch (error) {
+        console.error('Error al obtener cupones:', error);
+        notify('danger', 'Error al obtener cupones.');
+      }
+    };
+
+    fetchCupones();
     fetchCarritos();
+    fetchAutores();
   }, []);
+
+  const agruparProductos = (productos) => {
+    const productosAgrupados = {};
+    productos.forEach((producto) => {
+      if (productosAgrupados[producto.libroId]) {
+        productosAgrupados[producto.libroId].cantidad += 1;
+      } else {
+        productosAgrupados[producto.libroId] = { ...producto, cantidad: 1 };
+      }
+    });
+    return Object.values(productosAgrupados);
+  };
 
   const calcularTotal = (productos) => {
     if (!productos) return 0;
-    return productos.reduce((total, producto) => total + (producto.precio || 0), 0);
+    return productos.reduce((total, producto) => total + (producto.precio || 0) * (producto.cantidad || 1), 0);
   };
 
   const calcularImpuestos = (productos) => {
     if (!productos) return 0;
-    return productos.reduce((total, producto) => total + (producto.precio * 0.16 || 0), 0);
+    return productos.reduce((total, producto) => total + (producto.precio * (producto.cantidad || 1) * 0.16 || 0), 0);
   };
 
   const aplicarCupon = async () => {
@@ -50,7 +97,7 @@ const CarritoCompras = () => {
       console.error('Error al aplicar cupón:', error);
       notify('danger', 'Error al aplicar cupón.');
     }
-  }; 
+  };
 
   const eliminarArticulo = async (carritoSesionId, productoId) => {
     try {
@@ -85,11 +132,14 @@ const CarritoCompras = () => {
     notificationAlert.current.notificationAlert(options);
   };
 
-  // Cálculos del total con y sin descuento
-  const totalSubtotal = carritos.reduce((total, carrito) => total + calcularTotal(carrito.listaDeProductos), 0);
-  const totalImpuestos = carritos.reduce((total, carrito) => total + calcularImpuestos(carrito.listaDeProductos), 0);
-  const totalConDescuento = totalSubtotal * ((100 - descuento) / 100);  // Aplica el descuento al subtotal
-  const totalFinal = totalConDescuento + totalImpuestos;  // Suma los impuestos para obtener el total final
+  const productosAgrupados = agruparProductos(
+    carritos.flatMap((carrito) => carrito.listaDeProductos)
+  );
+  const totalCantidad = productosAgrupados.reduce((acc, prod) => acc + prod.cantidad, 0);
+  const subtotal = calcularTotal(productosAgrupados);
+  const totalImpuestos = calcularImpuestos(productosAgrupados);
+  const totalConImpuestos = subtotal + totalImpuestos;
+  const totalConDescuento = totalConImpuestos * ((100 - descuento) / 100);
 
   return (
     <>
@@ -99,31 +149,37 @@ const CarritoCompras = () => {
         <Row>
           <Col md={8}>
             <h3 className="mb-4">Carrito Registrado</h3>
-            {carritos.length > 0 ? (
-              carritos.map((carrito) => (
-                <Card className="mb-4" key={carrito.carritoId}>
-                  <CardBody>
-                    {carrito.listaDeProductos.map((producto, index) => (
-                      <Row key={producto.libroId + '-' + index} className="mb-2">
+            {productosAgrupados.length > 0 ? (
+              productosAgrupados.map((producto) => {
+                const carrito = carritos.find(c => c.listaDeProductos.some(p => p.libroId === producto.libroId));
+                return (
+                  <Card className="mb-4" key={producto.libroId}>
+                    <CardBody>
+                      <Row>
                         <Col md={2}>
-                          <img src="/path/to/image.jpg" alt={producto.tituloLibro} width="100%" />
+                          <img
+                            src={producto.imagenes ? `data:image/jpeg;base64,${producto.imagenes}` : 'placeholder.jpg'}
+                            alt={producto.tituloLibro}
+                            style={{ width: '100%', height: '100px', objectFit: 'cover' }}
+                          />
                         </Col>
                         <Col md={6}>
                           <CardTitle tag="h5">{producto.tituloLibro}</CardTitle>
-                          <CardText>Autor: {producto.autorLibro}</CardText>
+                          <CardText>Autor: {autores[producto.autorLibro] || "Autor desconocido"}</CardText>
                           <CardText>Fecha de Publicación: {new Date(producto.fechaPublicacion).toLocaleDateString()}</CardText>
+                          <CardText>Cantidad: {producto.cantidad}</CardText>
                         </Col>
                         <Col md={2} className="text-right">
-                          <CardText className="text-success">${producto.precio ? producto.precio.toFixed(2) : 'Sin precio'}</CardText>
+                          <CardText className="text-success">${(producto.precio * producto.cantidad).toFixed(2)}</CardText>
                         </Col>
                         <Col md={2} className="text-right">
                           <Button color="danger" size="sm" onClick={() => eliminarArticulo(carrito.carritoId, producto.libroId)}>Eliminar</Button>
                         </Col>
                       </Row>
-                    ))}
-                  </CardBody>
-                </Card>
-              ))
+                    </CardBody>
+                  </Card>
+                )
+              })
             ) : (
               <Card className="mb-4">
                 <CardBody>
@@ -140,11 +196,11 @@ const CarritoCompras = () => {
                   <tbody>
                     <tr>
                       <th>Cantidad:</th>
-                      <td>{carritos.reduce((total, carrito) => total + carrito.listaDeProductos.length, 0)}</td>
+                      <td>{totalCantidad}</td>
                     </tr>
                     <tr>
                       <th>Subtotal:</th>
-                      <td>${totalSubtotal.toFixed(2)}</td>
+                      <td>${subtotal.toFixed(2)}</td>
                     </tr>
                     <tr>
                       <th>Descuento:</th>
@@ -156,17 +212,53 @@ const CarritoCompras = () => {
                     </tr>
                     <tr>
                       <th>Total:</th>
-                      <td>${totalFinal.toFixed(2)}</td>
+                      <td>${totalConImpuestos.toFixed(2)}</td>
                     </tr>
+                    {descuento > 0 && (
+                      <tr>
+                        <th>Total con Descuento:</th>
+                        <td>${totalConDescuento.toFixed(2)}</td>
+                      </tr>
+                    )}
                   </tbody>
                 </Table>
-                <Button color="primary" block>Comprar</Button>
+                <Button color="primary" block>Finalizar Compra</Button>
               </CardBody>
             </Card>
             <Card className="mt-4">
               <CardBody>
-                <Input type="text" value={cupon} onChange={(e) => setCupon(e.target.value)} placeholder="Ingrese código de cupón" />
-                <Button color="primary" block className="mt-3" onClick={aplicarCupon}>Aplicar Cupón</Button>
+                <Input
+                  type="text"
+                  placeholder="Código de cupón"
+                  value={cupon}
+                  onChange={(e) => setCupon(e.target.value)}
+                />
+                <Button color="success" block onClick={aplicarCupon}>Aplicar Cupón</Button>
+              </CardBody>
+            </Card>
+            <Card className="mt-4">
+              <CardBody>
+                <h5>Cupones Disponibles</h5>
+                <Table borderless>
+                  <tbody>
+                    <tr>
+                      <th>Código</th>
+                      <th>Descuento (%)</th>
+                    </tr>
+                    {cuponesValidos.length > 0 ? (
+                      cuponesValidos.map((cupon, indexC) => (
+                        <tr key={indexC}>
+                          <td>{cupon.cuponCode}</td>
+                          <td>{cupon.porcentajeDescuento}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="2">No hay cupones disponibles.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </Table>
               </CardBody>
             </Card>
           </Col>

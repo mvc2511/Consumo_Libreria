@@ -8,10 +8,12 @@ function AgregarLibro() {
   const [autor, setAutor] = useState("");
   const [fechaPublicacion, setFechaPublicacion] = useState("");
   const [precio, setPrecio] = useState("");
+  const [imagen, setImagen] = useState(null);
+  const [imagenPreview, setImagenPreview] = useState(null);
+  const [autores, setAutores] = useState([]);
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertColor, setAlertColor] = useState("success");
-  const [autores, setAutores] = useState([]);
 
   useEffect(() => {
     const fetchAutores = async () => {
@@ -22,6 +24,7 @@ function AgregarLibro() {
         console.error("Error al obtener autores:", error);
       }
     };
+
     fetchAutores();
   }, []);
 
@@ -29,17 +32,8 @@ function AgregarLibro() {
     e.preventDefault();
 
     try {
-      const fechaUtc = new Date(fechaPublicacion).toISOString();
-      const nuevoLibro = {
-        titulo,
-        autor,
-        fechaPublicacion: fechaUtc,
-        precio: parseFloat(precio)
-      };
-
-      console.log('Datos del nuevo libro:', nuevoLibro);
-
-      const respuesta = await agregarLibro(nuevoLibro);
+      const nuevoLibro = { titulo, autor, fechaPublicacion, precio };
+      const respuesta = await agregarLibro(nuevoLibro, imagen);
 
       console.log("Libro agregado:", respuesta);
 
@@ -47,6 +41,8 @@ function AgregarLibro() {
       setAutor("");
       setFechaPublicacion("");
       setPrecio("");
+      setImagen(null);
+      setImagenPreview(null);
 
       setAlertMessage("Libro agregado exitosamente");
       setAlertColor("success");
@@ -58,6 +54,17 @@ function AgregarLibro() {
       setAlertColor("danger");
       setAlertVisible(true);
     }
+  };
+
+  const handleImagenChange = (e) => {
+    const selectedImagen = e.target.files[0];
+    setImagen(selectedImagen);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagenPreview(reader.result);
+    };
+    reader.readAsDataURL(selectedImagen);
   };
 
   return (
@@ -102,10 +109,10 @@ function AgregarLibro() {
                           onChange={(e) => setAutor(e.target.value)}
                           required
                         >
-                          <option value="" disabled>Seleccionar Autor</option>
-                          {autores.map((autor) => (
-                            <option key={autor.autorGuid || autor.nombre} value={autor.nombre}>
-                              {autor.nombre}
+                          <option value="">Selecciona un autor</option>
+                          {autores.map((autor, index) => (
+                            <option key={`${autor.guid}-${index}`} value={autor.guid}>
+                              {autor.nombre} {autor.apellido}
                             </option>
                           ))}
                         </Input>
@@ -113,7 +120,7 @@ function AgregarLibro() {
                     </Col>
                   </Row>
                   <Row>
-                    <Col md="12">
+                    <Col md="6">
                       <FormGroup>
                         <label>Fecha de Publicación</label>
                         <Input
@@ -125,9 +132,7 @@ function AgregarLibro() {
                         />
                       </FormGroup>
                     </Col>
-                  </Row>
-                  <Row>
-                    <Col md="12">
+                    <Col md="6">
                       <FormGroup>
                         <label>Precio</label>
                         <Input
@@ -135,11 +140,25 @@ function AgregarLibro() {
                           onChange={(e) => setPrecio(e.target.value)}
                           placeholder="Precio"
                           type="number"
-                          step="0.01"
-                          min="0"
                           required
                         />
                       </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md="12">
+                      <FormGroup>
+                        <label>Imagen</label>
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImagenChange}
+                          required
+                        />
+                      </FormGroup>
+                      {imagenPreview && (
+                        <img src={imagenPreview} alt="Vista previa de la imagen" style={{ maxWidth: '100%', maxHeight: '300px' }} />
+                      )}
                     </Col>
                   </Row>
                   <Button type="submit" color="primary">Agregar Libro</Button>

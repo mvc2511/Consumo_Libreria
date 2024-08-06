@@ -14,16 +14,14 @@ export const getLibros = async () => {
     autores.forEach(autor => {
       autoresDic[autor.autorLibroGuid] = {
         nombre: `${autor.nombre} ${autor.apellido}`,
-        imagen: autor.imagen // Asegúrate de que la API devuelva la imagen en formato base64
       };
     });
 
     const librosConNombresDeAutores = libros.map(libro => {
-      const autor = autoresDic[libro.autorLibro] || { nombre: 'Autor desconocido', imagen: null };
+      const autor = autoresDic[libro.autorLibro] || { nombre: 'Autor desconocido'};
       return {
         ...libro,
-        autorNombre: autor.nombre,
-        autorImagen: autor.imagen // Agregar la imagen al libro
+        autorNombre: autor.nombre
       };
     });
 
@@ -49,8 +47,7 @@ export const getLibroPorId = async (guid) => {
 
     const libroConAutor = {
       ...libro,
-      autorNombre: `${autor.nombre} ${autor.apellido}`,
-      autorImagen: autor.imagen // Asegúrate de que la API devuelva la imagen en formato base64
+      autorNombre: `${autor.nombre} ${autor.apellido}`
     };
 
     return libroConAutor;
@@ -60,26 +57,28 @@ export const getLibroPorId = async (guid) => {
   }
 };
 
-export const agregarLibro = async (nuevoLibro) => {
+export const agregarLibro = async (nuevoLibro, imagen) => {
   try {
     const autores = await getAutores();
 
-    const autorEncontrado = autores.find(autor => autor.nombre === nuevoLibro.autor);
+    const autorEncontrado = autores.find(autor => `${autor.nombre} ${autor.apellido}` === nuevoLibro.autor);
 
     if (!autorEncontrado) {
       throw new Error('No se encontró el autor especificado');
     }
 
-    const libroParaEnviar = {
-      titulo: nuevoLibro.titulo,
-      fechaPublicacion: nuevoLibro.fechaPublicacion,
-      autorLibro: autorEncontrado.autorLibroGuid,
-      precio: nuevoLibro.precio
-    };
+    const libroParaEnviar = new FormData();
+    libroParaEnviar.append('titulo', nuevoLibro.titulo);
+    libroParaEnviar.append('fechaPublicacion', nuevoLibro.fechaPublicacion);
+    libroParaEnviar.append('autorLibro', autorEncontrado.autorLibroGuid);
+    libroParaEnviar.append('precio', nuevoLibro.precio);
+    if (imagen) {
+      libroParaEnviar.append('imagen', imagen);
+    }
 
     const response = await axios.post(API_LIBRO_URL, libroParaEnviar, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'multipart/form-data'
       }
     });
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { getLibroPorId } from '../services/apiLibro.js';
-import { Card, CardHeader, CardBody, Row, Col, Form, Input, Button } from "reactstrap";
+import { Card, CardHeader, CardBody, CardImg, Row, Col, Form, Input, Button } from "reactstrap";
 import PanelHeader from "components/PanelHeader/PanelHeader.js";
 
 function BuscarLibroPorGuid() {
@@ -66,10 +66,17 @@ function BuscarLibroPorGuid() {
               <Card>
                 <CardHeader>
                   <h4 className="title">{libro.titulo}</h4>
-                  <p className="category">Fecha de publicacion: {libro.fechaPublicacion}</p>
                 </CardHeader>
+                <CardImg
+                  top
+                  width="100%"
+                  src={libro.imagenes ? `data:image/jpeg;base64,${libro.imagenes}` : 'placeholder.jpg'}
+                  alt={libro.autorNombre}
+                  style={{ height: '350px', objectFit: 'cover' }}
+                />
                 <CardBody>
                   <p>Escrito por: {libro.autorNombre}</p>
+                  <p>Fecha de publicacion: {libro.fechaPublicacion}</p>
                   <p>Precio: {libro.precio ? `$${libro.precio.toFixed(2)}` : 'Sin precio'}</p>
                 </CardBody>
               </Card>
