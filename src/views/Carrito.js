@@ -44,7 +44,11 @@ const CarritoCompras = () => {
       try {
         const response = await getCupones();
         if (response.isSuccess) {
-          const cuponesActivos = response.result.filter(cupon => new Date(cupon.fechaFin) > new Date());
+          const fechaActual = new Date(); // Fecha actual
+          // Filtrar cupones válidos basados en fecha de inicio y fecha de fin
+          const cuponesActivos = response.result.filter(cupon => 
+            new Date(cupon.fechaInicio) <= fechaActual && new Date(cupon.fechaFin) > fechaActual
+          );
           setCuponesValidos(cuponesActivos);
         } else {
           console.error('Error al obtener cupones:', response.message);
@@ -54,7 +58,7 @@ const CarritoCompras = () => {
         console.error('Error al obtener cupones:', error);
         notify('danger', 'Error al obtener cupones.');
       }
-    };
+    };    
 
     fetchCupones();
     fetchCarritos();
