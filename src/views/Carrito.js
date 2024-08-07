@@ -125,6 +125,12 @@ const CarritoCompras = () => {
     }
   };
 
+  
+  const limpiarCupon = async () => {
+    setCupon('');
+    setDescuento('0');
+};
+
   const notify = (type, message) => {
     const options = {
       place: 'tr',
@@ -187,7 +193,7 @@ const CarritoCompras = () => {
             ) : (
               <Card className="mb-4">
                 <CardBody>
-                  <CardText>No hay carritos con productos seleccionados.</CardText>
+                  <CardText>No hay productos seleccionados.</CardText>
                 </CardBody>
               </Card>
             )}
@@ -211,7 +217,7 @@ const CarritoCompras = () => {
                       <td>{descuento}%</td>
                     </tr>
                     <tr>
-                      <th>Impuestos:</th>
+                      <th>IVA:</th>
                       <td>${totalImpuestos.toFixed(2)}</td>
                     </tr>
                     <tr>
@@ -237,7 +243,8 @@ const CarritoCompras = () => {
                   value={cupon}
                   onChange={(e) => setCupon(e.target.value)}
                 />
-                <Button color="success" block onClick={aplicarCupon}>Aplicar Cupón</Button>
+                <Button color="success" style={{ borderRadius: '0.75rem 0.75rem', height: '38px' }}  onClick={aplicarCupon}>Aplicar Cupón</Button>
+                <Button color="default" style={{ borderRadius: '0.75rem 0.75rem', height: '38px' }} onClick={limpiarCupon}>Quitar Cupon</Button>
               </CardBody>
             </Card>
             <Card className="mt-4">

@@ -58,7 +58,7 @@ function EditarCupon() {
 
         try {
             const respuesta = await actualizarCupon(cupon);
-            console.log('Cupón actualizado:', respuesta);
+            //console.log('Cupón actualizado:', respuesta);
 
             setAlertMessage('Cupón actualizado exitosamente');
             setAlertColor('success');

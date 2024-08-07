@@ -1,19 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-    Card,
-    CardBody,
-    CardHeader,
-    Table,
-    Row,
-    Col,
-    Spinner,
-    Input,
-    InputGroup,
-    InputGroupAddon,
-    Button,
-    Form,
-    Alert
-} from 'reactstrap';
+import {Card, CardBody,CardHeader,Table,Row,Col,Spinner,Input,InputGroup,InputGroupAddon,Button,Form,Alert} from 'reactstrap';
 import PanelHeader from 'components/PanelHeader/PanelHeader';
 import { Link } from 'react-router-dom';
 import { getCupones, getCuponPorId, getCuponPorCodigo } from '../services/apiCupones';
